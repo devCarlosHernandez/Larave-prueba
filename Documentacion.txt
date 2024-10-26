@@ -1,0 +1,28 @@
+//Carpeta de route, son para conectar las vistas
+
+Archivo .env
+Configuracion de la aplicacion para conectar base de datos de rds de aws
+
+Comandos para ejecutar o crear alguna view, controller o model
+
+Laravel Version 10.10
+
+
+php artisan make:controller UserController --- Cambia este nombre por el nombre que quieres colocar a tu archivo
+
+php artisan make:view greeting
+
+php artisan make:model Client -mcr
+
+php artisan migrate
+
+php artisan serve
+
+
+Se debe de subir con todo y vendor por cuestion de depencias por favor
+
+Hoja de estilos gloables para hacer assets/vendor/css/style.css, ya esta conectada!!!!
+
+Deben de conectar ya la base de datos para hacer el funcionamiento correcto ya direcciona correctamente para pruebas
+ usa migrate y haz una prueba
+
