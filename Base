@@ -1,0 +1,159 @@
+-- Table: marcas
+CREATE TABLE marcas (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT unique_nombre_marca UNIQUE (nombre) -- Restricción de nombres únicos en marcas
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Table: categorias
+CREATE TABLE categorias (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(255) NOT NULL,
+    descripcion TEXT NOT NULL,
+    created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Table: productos
+CREATE TABLE productos (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(255) NOT NULL,
+    descripcion TEXT NOT NULL,
+    precio DECIMAL(8, 2) NOT NULL,
+    marca_id BIGINT UNSIGNED NOT NULL,
+    categoria_id BIGINT UNSIGNED DEFAULT NULL,  -- Permite NULL
+    created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT fk_marca_producto FOREIGN KEY (marca_id) REFERENCES marcas(id) ON DELETE CASCADE,
+    CONSTRAINT fk_categoria_producto FOREIGN KEY (categoria_id) REFERENCES categorias(id) ON DELETE SET NULL,
+    CONSTRAINT unique_nombre_marca_producto UNIQUE (nombre, marca_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+-- Table: proveedores
+CREATE TABLE proveedores (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(255) NOT NULL,
+    direccion TEXT NOT NULL,
+    telefono VARCHAR(20),
+    created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Table: productos_proveedores (Relación de muchos a muchos entre productos y proveedores)
+CREATE TABLE productos_proveedores (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    producto_id BIGINT UNSIGNED NOT NULL,
+    proveedor_id BIGINT UNSIGNED NOT NULL,
+    created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT fk_producto_proveedor FOREIGN KEY (producto_id) REFERENCES productos(id) ON DELETE CASCADE,
+    CONSTRAINT fk_proveedor_producto FOREIGN KEY (proveedor_id) REFERENCES proveedores(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
+
+CREATE TABLE users_productos (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    usuario_id BIGINT UNSIGNED NOT NULL,
+    producto_id BIGINT UNSIGNED NOT NULL,
+    created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT fk_usuario_producto FOREIGN KEY (usuario_id) REFERENCES users(id) ON DELETE CASCADE,
+    CONSTRAINT fk_producto_usuario FOREIGN KEY (producto_id) REFERENCES productos(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+ALTER TABLE productos AUTO_INCREMENT = 1;
+
+ALTER TABLE categorias AUTO_INCREMENT = 1;
+
+ALTER TABLE marcas AUTO_INCREMENT = 1;
+
+INSERT INTO marcas (nombre) VALUES 
+('Nike'), 
+('Adidas'), 
+('Puma'), 
+('Reebok'), 
+('Under Armour'),
+('New Balance'),
+('Asics'),
+('Saucony'),
+('Converse'),
+('Vans'),
+('Fila'),
+('Hoka One One'),
+('Skechers'),
+('Brooks'),
+('Merrell');
+
+
+INSERT INTO categorias (nombre, descripcion) VALUES 
+('Calzado', 'Todo tipo de calzado deportivo y casual'), 
+('Ropa', 'Ropa deportiva y casual para todas las edades'), 
+('Accesorios', 'Accesorios deportivos y de moda'), 
+('Equipamiento', 'Equipamiento para diferentes deportes'), 
+('Bolsos', 'Bolsos y mochilas para el día a día y deportes'),
+('Ropa de entrenamiento', 'Ropa diseñada para el ejercicio y el entrenamiento'),
+('Ropa de running', 'Ropa específica para correr'),
+('Ropa de yoga', 'Ropa cómoda para practicar yoga'),
+('Calzado casual', 'Calzado cómodo para uso diario'),
+('Ropa de invierno', 'Prendas para el clima frío'),
+('Calzado de montaña', 'Calzado diseñado para senderismo y montaña'),
+('Equipamiento de gimnasio', 'Equipamiento para entrenamiento en casa o en el gimnasio'),
+('Calzado de fútbol', 'Botas diseñadas para jugar al fútbol'),
+('Ropa de ciclismo', 'Ropa específica para ciclistas'),
+('Ropa de natación', 'Prendas para nadadores'),
+('Ropa de surf', 'Ropa cómoda para surfistas');
+
+
+INSERT INTO productos (nombre, descripcion, precio, marca_id, categoria_id) VALUES 
+('Zapatillas Air Max', 'Zapatillas deportivas Air Max de Nike', 120.00, 1, 1), 
+('Camiseta Essentials', 'Camiseta básica de Adidas', 25.50, 2, 2), 
+('Zapatillas RS-X', 'Zapatillas deportivas RS-X de Puma', 90.75, 3, 1), 
+('Zapatillas Classic Leather', 'Zapatillas Classic Leather de Reebok', 70.99, 4, 1), 
+('Sudadera Tech', 'Sudadera de entrenamiento de Under Armour', 55.00, 5, 2),
+('Zapatillas 990v5', 'Zapatillas 990v5 de New Balance', 185.00, 6, 1),
+('Zapatillas Gel-Kayano', 'Zapatillas de running Gel-Kayano de Asics', 160.00, 7, 2),
+('Zapatillas Kinvara', 'Zapatillas Kinvara de Saucony', 110.00, 8, 2),
+('Zapatillas Chuck Taylor', 'Zapatillas Chuck Taylor de Converse', 55.00, 9, 1),
+('Zapatillas Old Skool', 'Zapatillas Old Skool de Vans', 65.00, 10, 1),
+('Zapatillas Disruptor', 'Zapatillas Disruptor de Fila', 70.00, 11, 1),
+('Zapatillas Bondi 7', 'Zapatillas Bondi 7 de Hoka One One', 160.00, 12, 1),
+('Zapatillas Go Walk', 'Zapatillas Go Walk de Skechers', 80.00, 13, 1),
+('Zapatillas Ghost', 'Zapatillas Ghost de Brooks', 140.00, 14, 2),
+('Zapatillas Moab 2', 'Zapatillas Moab 2 de Merrell', 130.00, 15, 1);
+
+
+INSERT INTO proveedores (nombre, direccion, telefono) VALUES 
+('Proveedor A', 'Calle Falsa 123, Ciudad A', '555-0123'), 
+('Proveedor B', 'Avenida Siempre Viva 742, Ciudad B', '555-0456'), 
+('Proveedor C', 'Boulevard de los Sueños Rotos 456, Ciudad C', '555-0789'), 
+('Proveedor D', 'Plaza Mayor 89, Ciudad D', '555-1011'), 
+('Proveedor E', 'Calle de la Libertad 33, Ciudad E', '555-1213'),
+('Proveedor F', 'Calle del Sol 77, Ciudad F', '555-1415'),
+('Proveedor G', 'Calle de la Luna 44, Ciudad G', '555-1617'),
+('Proveedor H', 'Calle de la Esperanza 22, Ciudad H', '555-1819'),
+('Proveedor I', 'Calle de la Amistad 11, Ciudad I', '555-2021'),
+('Proveedor J', 'Calle del Norte 90, Ciudad J', '555-2223');
+
+INSERT INTO proveedores (nombre, direccion, telefono) VALUES 
+('Proveedor A', 'Calle Falsa 123, Ciudad A', '555-0123'), 
+('Proveedor B', 'Avenida Siempre Viva 742, Ciudad B', '555-0456'), 
+('Proveedor C', 'Boulevard de los Sueños Rotos 456, Ciudad C', '555-0789'), 
+('Proveedor D', 'Plaza Mayor 89, Ciudad D', '555-1011'), 
+('Proveedor E', 'Calle de la Libertad 33, Ciudad E', '555-1213'),
+('Proveedor F', 'Calle del Sol 77, Ciudad F', '555-1415'),
+('Proveedor G', 'Calle de la Luna 44, Ciudad G', '555-1617'),
+('Proveedor H', 'Calle de la Esperanza 22, Ciudad H', '555-1819'),
+('Proveedor I', 'Calle de la Amistad 11, Ciudad I', '555-2021'),
+('Proveedor J', 'Calle del Norte 90, Ciudad J', '555-2223'),
+('Proveedor K', 'Calle del Río 12, Ciudad K', '555-2425'),
+('Proveedor L', 'Calle de los Sueños 34, Ciudad L', '555-2627'),
+('Proveedor M', 'Calle de la Paz 56, Ciudad M', '555-2829'),
+('Proveedor N', 'Avenida del Futuro 78, Ciudad N', '555-3031'),
+('Proveedor O', 'Calle de la Historia 90, Ciudad O', '555-3233');
+
+
+
+ALTER TABLE marcas AUTO_INCREMENT = 1;

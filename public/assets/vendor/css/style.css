@@ -1,0 +1,27 @@
+.color {
+    background-color: rgb(100, 91, 205); /* Color de fondo */
+    border-radius: 8px; /* Bordes redondeados */
+    padding: 6.8px 18px; /* Espaciado interno */
+    margin: 0; /* Eliminar márgenes */
+}
+
+.custom-menu-link {
+    display: flex;
+    align-items: center;
+    justify-content: center; /* Centra el contenido */
+    color: white; /* Color del texto */
+    text-decoration: none; /* Sin subrayado */
+    padding: 0; /* Sin padding adicional */
+    margin: 0; /* Eliminar márgenes */
+}
+
+.custom-menu-icon {
+    color: white; /* Color del ícono */
+    font-size: 25px; /* Tamaño del ícono */
+    margin-right: 10px; /* Espaciado entre ícono y texto */
+}
+
+.custom-menu-text {
+    color: white; /* Color del texto */
+    font-size: 16px; /* Tamaño de la fuente del texto */
+}
