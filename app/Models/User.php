@@ -13,6 +13,8 @@ class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
+    use HasApiTokens, Notifiable;
+
     /**
      * The attributes that are mass assignable.
      *
@@ -50,5 +52,5 @@ class User extends Authenticatable
                     ->withTimestamps(); // Opcional: para mantener las marcas de tiempo
     }
 
-    
+
 }
