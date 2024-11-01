@@ -73,6 +73,12 @@ Route::post('/proveedores', [ProveedoresController::class, 'store']);
 
 Route::middleware('auth:sanctum')->get('/productos', [ProductoController::class, 'index']);
 
+/* Rutas para listar */
+
+Route::get('/marcas', [MarcaController::class, 'index']);
+
+Route::get('/categorias', [CategoriaController::class, 'index']);
+
 /* Activity Log */
 
 Route::middleware('auth:sanctum')->get('/activity', [ActivityController::class, 'index']);

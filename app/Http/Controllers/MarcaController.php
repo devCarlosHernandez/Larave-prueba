@@ -11,15 +11,15 @@ use Illuminate\Support\Facades\Session;
 class MarcaController extends Controller
 {
     public function index()
-{
+    {
+        if (request()->expectsJson()) {
+            return response()->json(Marca::all()); // Obtener todas las marcas sin paginación
+        }
 
-    if (request()->expectsJson()) {
-        return response()->json(Marca::paginate(50));
+        $marcas = Marca::with('productos')->get(); // Asegúrate de usar 'marcas' en lugar de 'marca' para ser coherente
+        return view('marcas.index', compact('marcas'));
     }
 
-    $marca = Marca::with('productos')->get();
-    return view('marcas.index', compact('marca'));
-}
 
     public function create()
     {
