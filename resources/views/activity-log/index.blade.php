@@ -28,7 +28,7 @@
             }
         </style>
 
-  
+
 
         @if (Session::has('mensaje'))
             <div class="alert alert-info my-5">
@@ -41,7 +41,7 @@
             <thead>
                 <tr>
                     <th>id</th>
-                    <th>Nombre Categoria</th>
+                    <th>Usuario</th>
                     <th>Descripcion</th>
                     <th>Valor del registro</th>
                     <th>Fecha de creacion</th>

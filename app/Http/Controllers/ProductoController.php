@@ -13,14 +13,22 @@ class ProductoController extends Controller
 {
     public function index()
     {
-        $productos = Producto::with('marca', 'categoria')->get();
+        if (request()->expectsJson()) {
+            // Obtener productos con proveedores para la respuesta JSON
+            $productos = Producto::with('proveedores')->paginate(50); // Cambié aquí para incluir proveedores
+            return response()->json($productos);
+        }
+
+        // Obtener productos con marcas y categorías para la vista
+        $productos = Producto::with('marca', 'categoria', 'proveedores')->get(); // Asegúrate de incluir proveedores aquí también
         return view('productos.index', compact('productos'));
     }
 
+
     public function create()
     {
-        $marcas = Marca::all(); 
-        $categorias = Categoria::all(); 
+        $marcas = Marca::all();
+        $categorias = Categoria::all();
         $proveedores = Proveedores::all(); // Obtener todos los proveedores
         return view('productos.create', compact('marcas', 'categorias', 'proveedores'));
     }
@@ -117,16 +125,16 @@ class ProductoController extends Controller
         $producto = Producto::findOrFail($id);
 
         activity()
-        ->performedOn($producto) 
+        ->performedOn($producto)
         ->causedBy(auth()->user())
         ->log('Se eliminó el producto: ' . $producto->nombre);
         $producto->delete();
-    
+
         return redirect()->route('productos.index')->with('success', 'Producto eliminado correctamente.');
     }
-    
 
-    
-    
+
+
+
 }
 

@@ -12,13 +12,18 @@ class MarcaController extends Controller
 {
     public function index()
 {
+
+    if (request()->expectsJson()) {
+        return response()->json(Marca::paginate(50));
+    }
+
     $marca = Marca::with('productos')->get();
     return view('marcas.index', compact('marca'));
 }
 
     public function create()
     {
-        $productos = Producto::all(); 
+        $productos = Producto::all();
         return view('marcas.form', compact('productos'));
     }
 
@@ -26,25 +31,29 @@ class MarcaController extends Controller
 
     public function store(Request $request)
     {
+        // Validar los campos necesarios
         $request->validate([
             'nombre' => 'required|max:45',
-            'producto_id' => 'required|max:45',
+            // Elimina producto_id si no es necesario
         ]);
 
+        // Crear la nueva marca
+        $marca = Marca::create($request->only('nombre'));
 
-        $marca = Marca::create($request->only(
-            'nombre',
-            'producto_id',
-        ));
-
+        // Registrar la actividad
         activity()
-            ->performedOn($marca) 
-            ->causedBy(auth()->user()) 
+            ->performedOn($marca)
+            ->causedBy(auth()->user())
             ->log('Creó una nueva marca: ' . $marca->nombre);
 
-        Session::flash('mensaje', 'Categoria registrada');
+        // Si la solicitud espera JSON, retorna respuesta JSON
+        if ($request->expectsJson()) {
+            return response()->json(['mensaje' => 'Marca registrada', 'marca' => $marca], 201);
+        }
 
-        return redirect()->route('marcas.index')->with('mensaje', 'Categoria registrada');
+        // Redireccionar y agregar mensaje a la sesión
+        Session::flash('mensaje', 'Marca registrada');
+        return redirect()->route('marcas.index')->with('mensaje', 'Marca registrada');
     }
 
     public function update(Request $request, $id)
@@ -64,14 +73,14 @@ class MarcaController extends Controller
         ]);
 
         activity()
-        ->performedOn($marca) 
-        ->causedBy(auth()->user()) 
+        ->performedOn($marca)
+        ->causedBy(auth()->user())
         ->log('Actualizó la marca: ' . $marca->nombre);
- 
+
         return redirect()->route('marcas.index')->with('success', 'Categoría actualizada correctamente.');
     }
 
-    public function show(Marca $marca) 
+    public function show(Marca $marca)
     {
         return view('marcas.show', compact('marcas'));
     }
@@ -89,8 +98,8 @@ class MarcaController extends Controller
     $marca = Marca::findOrFail($id);
 
     activity()
-        ->performedOn($marca) 
-        ->causedBy(auth()->user()) 
+        ->performedOn($marca)
+        ->causedBy(auth()->user())
         ->log('Eliminó la marca: ' . $marca->nombre);
     $marca->delete();
 

@@ -71,7 +71,7 @@
                                 <li>{{ $proveedor->nombre }}</li>
                             @endforeach
                         </ul>
-                        
+
                     </td>
                     <td>
                         <a href="{{ route('productos.edit', $producto) }}" class="btn btn-warning">
@@ -85,7 +85,7 @@
                                 <i class="fas fa-times me-2"></i>Eliminar
                             </button>
                         </form>
-                    </td>                    
+                    </td>
                 </tr>
             @endforeach
             </tbody>
@@ -124,7 +124,7 @@
     $(document).ready(function(){
         $('#articles').DataTable();
     });
-    
+
 </script>
 <script>
 

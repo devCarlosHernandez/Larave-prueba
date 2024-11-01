@@ -6,13 +6,18 @@ use App\Models\Categoria; // Asegúrate de que esto sea correcto
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 
-class CategoriaController extends Controller 
+class CategoriaController extends Controller
 {
     public function index()
     {
+
+        if (request()->expectsJson()) {
+            return response()->json(Categoria::paginate(50));
+        }
+
         // Obtener todos los artículos
-        $categorias = Categoria::paginate(50); 
-        return view('categorias.index', compact('categorias')); 
+        $categorias = Categoria::paginate(50);
+        return view('categorias.index', compact('categorias'));
     }
 
     public function create() {
@@ -27,21 +32,19 @@ class CategoriaController extends Controller
             'descripcion' => 'required|max:45',
         ]);
 
-
-        $categorias = Categoria::create($request->only(
+        $categoria = Categoria::create($request->only(
             'nombre',
             'descripcion',
         ));
 
         activity()
-            ->performedOn($categorias) // El modelo que estás registrando
+            ->performedOn($categoria) // El modelo que estás registrando
             ->causedBy(auth()->user()) // Usuario que realiza la acción
-            ->log('Creó una nueva categoría: ' . $categorias->nombre);
+            ->log('Creó una nueva categoría: ' . $categoria->nombre);
 
-        Session::flash('mensaje', 'Categoria registrada');
-
-        return redirect()->route('categorias.index')->with('mensaje', 'Categoria registrada');
+        return response()->json(['message' => 'Categoría registrada', 'categoria' => $categoria], 201);
     }
+
 
     public function update(Request $request, $id)
     {
@@ -58,24 +61,24 @@ class CategoriaController extends Controller
             'nombre' => $request->nombre,
             'descripcion' => $request->descripcion,
         ]);
-        
+
         activity()
         ->performedOn($categorias) // El modelo que estás registrando
         ->causedBy(auth()->user()) // Usuario que realiza la acción
         ->log('Actualizó la categoría: ' . $categorias->nombre);
- 
+
         return redirect()->route('categorias.index')->with('success', 'Categoría actualizada correctamente.');
     }
 
-    public function show(Categoria $categorias) 
+    public function show(Categoria $categorias)
     {
         return view('categorias.show', compact('categorias'));
     }
 
     public function edit($id)
     {
-        $categorias = Categoria::findOrFail($id); 
-        return view('categorias.form', compact('categorias')); 
+        $categorias = Categoria::findOrFail($id);
+        return view('categorias.form', compact('categorias'));
     }
 
     public function destroy($id)

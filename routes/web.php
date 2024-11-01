@@ -20,8 +20,6 @@ use App\Http\Controllers\UserController;
 */
 
 
-
-
 Route::get('/', function () {
     return view('auth.login');
 });
@@ -47,14 +45,8 @@ Route::resource('proveedores', ProveedoresController::class);
 
 Route::delete('/productos/{id}/delete', [App\Http\Controllers\ProductoController::class, 'destroy'])->name('productos.destroy');
 
-
-
-
 Route::delete('/categorias/{categoria}', [CategoriaController::class, 'destroy'])->name('categorias.destroy');
 Route::resource('categorias', CategoriaController::class);
-
-
-
 
 /* Categorias */
 Route::get('/categorias', [App\Http\Controllers\CategoriaController::class, 'index'])->name('categorias.index');

@@ -13,6 +13,10 @@ class ProveedoresController extends Controller
 
     public function index()
     {
+        if (request()->expectsJson()) {
+            return response()->json(Proveedores::paginate(50));
+        }
+
         $proveedores = Proveedores::all();
         return view('proveedores.index', compact('proveedores'));
     }
@@ -25,28 +29,32 @@ class ProveedoresController extends Controller
 
     public function store(Request $request)
     {
+        // Validar los campos necesarios
         $request->validate([
             'nombre' => 'required|max:45',
             'direccion' => 'required|max:45',
             'telefono' => 'required|max:45',
         ]);
 
+        // Crear el nuevo proveedor
+        $proveedores = Proveedores::create($request->only('nombre', 'direccion', 'telefono'));
 
-        $proveedores = Proveedores::create($request->only(
-            'nombre',
-            'direccion',
-            'telefono',
-        ));
-
+        // Registrar la actividad
         activity()
-            ->performedOn($proveedores) 
-            ->causedBy(auth()->user()) 
+            ->performedOn($proveedores)
+            ->causedBy(auth()->user())
             ->log('Creó un nuevo proveedor: ' . $proveedores->nombre);
 
-        Session::flash('mensaje', 'Proveedor registrada');
+        // Si la solicitud espera JSON, retorna respuesta JSON
+        if ($request->expectsJson()) {
+            return response()->json(['mensaje' => 'Proveedor registrado', 'proveedor' => $proveedores], 201);
+        }
 
-        return redirect()->route('proveedores.index')->with('mensaje', 'Proveedor registrada');
+        // Redireccionar y agregar mensaje a la sesión
+        Session::flash('mensaje', 'Proveedor registrado');
+        return redirect()->route('proveedores.index')->with('mensaje', 'Proveedor registrado');
     }
+
 
     public function update(Request $request, $id)
     {
@@ -66,10 +74,10 @@ class ProveedoresController extends Controller
             'direccion' => $request->direccion,
             'telefono' => $request->telefono,
         ]);
-        
+
         activity()
-        ->performedOn($proveedores) 
-        ->causedBy(auth()->user()) 
+        ->performedOn($proveedores)
+        ->causedBy(auth()->user())
         ->log('Actualizó al proveedores: ' . $proveedores->nombre);
 
         // Redirige a la lista de categorías con un mensaje de éxito
@@ -91,8 +99,8 @@ class ProveedoresController extends Controller
     {
     $proveedores = Proveedores::findOrFail($id);
     activity()
-        ->performedOn($proveedores) 
-        ->causedBy(auth()->user()) 
+        ->performedOn($proveedores)
+        ->causedBy(auth()->user())
         ->log('Eliminó la marca: ' . $proveedores->nombre);
     $proveedores->delete();
 
