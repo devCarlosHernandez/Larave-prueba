@@ -12,10 +12,11 @@ class CategoriaController extends Controller
     {
 
         if (request()->expectsJson()) {
-            return response()->json(Categoria::paginate(50));
+            return response()->json(Categoria::all());
         }
 
         // Obtener todos los artículos
+        $categorias = Categoria::with('productos')->get();
         $categorias = Categoria::paginate(50);
         return view('categorias.index', compact('categorias'));
     }
@@ -27,23 +28,31 @@ class CategoriaController extends Controller
 
     public function store(Request $request)
     {
+        // Validar los campos necesarios
         $request->validate([
             'nombre' => 'required|max:45',
             'descripcion' => 'required|max:45',
         ]);
 
-        $categoria = Categoria::create($request->only(
-            'nombre',
-            'descripcion',
-        ));
+        // Crear la nueva categoría
+        $categoria = Categoria::create($request->only('nombre', 'descripcion'));
 
+        // Registrar la actividad
         activity()
-            ->performedOn($categoria) // El modelo que estás registrando
-            ->causedBy(auth()->user()) // Usuario que realiza la acción
+            ->performedOn($categoria)
+            ->causedBy(auth()->user())
             ->log('Creó una nueva categoría: ' . $categoria->nombre);
 
-        return response()->json(['message' => 'Categoría registrada', 'categoria' => $categoria], 201);
+        // Si la solicitud espera JSON, retorna respuesta JSON
+        if ($request->expectsJson()) {
+            return response()->json(['mensaje' => 'Categoría registrada', 'categoria' => $categoria], 201);
+        }
+
+        // Redireccionar y agregar mensaje a la sesión
+        Session::flash('mensaje', 'Categoría registrada');
+        return redirect()->route('categorias.index')->with('mensaje', 'Categoría registrada');
     }
+
 
 
     public function update(Request $request, $id)
