@@ -62,7 +62,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Agrega otras rutas para editar y eliminar marcas si es necesario
 });
 Route::apiResource('marcas', MarcaController::class);
-
+Route::put('/marcas/{id}', [MarcaController::class, 'update'])->name('marcas.update');
 
 Route::middleware('auth:sanctum')->get('/marcas', [MarcaController::class, 'index']);
 

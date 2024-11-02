@@ -17,7 +17,6 @@ class ProveedoresController extends Controller
             return response()->json(Proveedores::all());
         }
 
-        $proveedores = Proveedores::with('productos')->get();
         $proveedores = Proveedores::paginate(50);
         return view('proveedores.index', compact('proveedores'));
     }

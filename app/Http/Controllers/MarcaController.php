@@ -58,27 +58,27 @@ class MarcaController extends Controller
 
     public function update(Request $request, $id)
     {
-
         $request->validate([
             'nombre' => 'required|string|max:255',
-            'producto_id' => 'required|string|max:255',  //Integer
+            'producto_id' => 'nullable|string|max:255',  // Hacerlo nullable
         ]);
-
 
         $marca = Marca::findOrFail($id);
 
-        $marca->update([
+        // Actualizar solo los campos que han sido enviados en la solicitud
+        $marca->update(array_filter([
             'nombre' => $request->nombre,
-            'producto_id' => $request->producto_id,
-        ]);
+            'producto_id' => $request->producto_id,  // Solo se actualiza si no es null
+        ]));
 
         activity()
-        ->performedOn($marca)
-        ->causedBy(auth()->user())
-        ->log('Actualizó la marca: ' . $marca->nombre);
+            ->performedOn($marca)
+            ->causedBy(auth()->user())
+            ->log('Actualizó la marca: ' . $marca->nombre);
 
         return redirect()->route('marcas.index')->with('success', 'Marca actualizada correctamente.');
     }
+
 
     public function show(Marca $marca)
     {

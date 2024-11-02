@@ -3,7 +3,7 @@
 @section('content')
 <div class="container-xxl flex-grow-1 container-p-y">
     <h1 class="text-center">Listado de Marcas</h1>
-    
+
     <div class="card">
         <div class="card-datatable table-responsive pt-0">
             <style>
@@ -41,7 +41,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($marca as $item)
+                    @foreach ($marcas as $item)
                         <tr>
                             <td>{{ $item->id }}</td>
                             <td>{{ $item->nombre }}</td>
@@ -61,7 +61,7 @@
                     @endforeach
 
                 </tbody>
-                @if($marca->isEmpty())
+                @if($marcas->isEmpty())
                     <tr>
                         <td colspan="3">No existen registros!</td>
                     </tr>
