@@ -14,10 +14,11 @@ class ProveedoresController extends Controller
     public function index()
     {
         if (request()->expectsJson()) {
-            return response()->json(Proveedores::paginate(50));
+            return response()->json(Proveedores::all());
         }
 
-        $proveedores = Proveedores::all();
+        $proveedores = Proveedores::with('productos')->get();
+        $proveedores = Proveedores::paginate(50);
         return view('proveedores.index', compact('proveedores'));
     }
 
