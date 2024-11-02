@@ -61,7 +61,7 @@ class MarcaController extends Controller
 
         $request->validate([
             'nombre' => 'required|string|max:255',
-            'producto_id' => 'required|string|max:255',
+            'producto_id' => 'required|string|max:255',  //Integer
         ]);
 
 
@@ -77,11 +77,13 @@ class MarcaController extends Controller
         ->causedBy(auth()->user())
         ->log('Actualizó la marca: ' . $marca->nombre);
 
-        return redirect()->route('marcas.index')->with('success', 'Categoría actualizada correctamente.');
+        return redirect()->route('marcas.index')->with('success', 'Marca actualizada correctamente.');
     }
 
     public function show(Marca $marca)
     {
+        return response()->json($marca);
+
         return view('marcas.show', compact('marcas'));
     }
 
