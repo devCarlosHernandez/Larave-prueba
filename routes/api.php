@@ -78,6 +78,7 @@ Route::apiResource('proveedores', ProveedoresController::class);
 Route::middleware('auth:sanctum')->get('/productos', [ProductoController::class, 'index']);
 Route::post('/productos', [ProductoController::class, 'store']);
 Route::delete('/productos', [ProductoController::class, 'destroy']);
+Route::apiResource('productos', ProductoController::class);
 /* Rutas para listar */
 
 Route::get('/marcas', [MarcaController::class, 'index']);

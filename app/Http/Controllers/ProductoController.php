@@ -122,19 +122,23 @@ class ProductoController extends Controller
 
     public function destroy($id)
     {
-        $producto = Producto::findOrFail($id);
+        try {
+            $producto = Producto::findOrFail($id); // Buscar el producto o lanzar excepción
 
-        activity()
-        ->performedOn($producto)
-        ->causedBy(auth()->user())
-        ->log('Se eliminó el producto: ' . $producto->nombre);
-        $producto->delete();
+            activity()
+                ->performedOn($producto)
+                ->causedBy(auth()->user())
+                ->log('Se eliminó el producto: ' . $producto->nombre);
 
-        return redirect()->route('productos.index')->with('success', 'Producto eliminado correctamente.');
+            $producto->delete(); // Eliminar el producto
+
+            return response()->json(['message' => 'Producto eliminado correctamente.'], 200); // Respuesta en JSON
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Producto no encontrado.'], 404); // Respuesta si no se encuentra
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Error al eliminar el producto.'], 500); // Respuesta de error general
+        }
     }
-
-
-
 
 }
 
