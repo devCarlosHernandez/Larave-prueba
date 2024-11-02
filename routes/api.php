@@ -70,17 +70,18 @@ Route::middleware('auth:sanctum')->get('/marcas', [MarcaController::class, 'inde
 
 Route::middleware('auth:sanctum')->get('/proveedores', [ProveedoresController::class, 'index']);
 Route::post('/proveedores', [ProveedoresController::class, 'store']);
+Route::delete('/proveedores', [ProveedoresController::class, 'destroy']);
 Route::apiResource('proveedores', ProveedoresController::class);
 
 /* Productos */
 
 Route::middleware('auth:sanctum')->get('/productos', [ProductoController::class, 'index']);
 Route::post('/productos', [ProductoController::class, 'store']);
-Route::apiResource('proveedores', ProductoController::class);
+Route::delete('/productos', [ProductoController::class, 'destroy']);
 /* Rutas para listar */
 
 Route::get('/marcas', [MarcaController::class, 'index']);
-Route::apiResource('productos', MarcaController::class);
+Route::apiResource('productos', ProductoController::class);
 
 Route::get('/categorias', [CategoriaController::class, 'index']);
 Route::apiResource('categorias', CategoriaController::class);

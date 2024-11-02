@@ -98,15 +98,27 @@ class ProveedoresController extends Controller
 
     public function destroy($id)
     {
-    $proveedores = Proveedores::findOrFail($id);
-    activity()
-        ->performedOn($proveedores)
-        ->causedBy(auth()->user())
-        ->log('Eliminó la marca: ' . $proveedores->nombre);
-    $proveedores->delete();
+        try {
+            // Encuentra el proveedor o lanza una excepción si no se encuentra
+            $proveedores = Proveedores::findOrFail($id);
 
-    return redirect()->route('proveedores.index')->with('success', 'Proveedor eliminada correctamente.');
+            // Registra la actividad
+            activity()
+                ->performedOn($proveedores)
+                ->causedBy(auth()->user())
+                ->log('Eliminó el proveedor: ' . $proveedores->nombre);
+
+            // Elimina el proveedor
+            $proveedores->delete();
+
+            // Respuesta en caso de éxito
+            return response()->json(['message' => 'Proveedor eliminado correctamente.'], 200);
+        } catch (\Exception $e) {
+            // Manejo de errores en caso de fallo
+            return response()->json(['error' => 'Hubo un problema al eliminar el proveedor.'], 500);
+        }
     }
+
 
     public function assignProducts(Request $request, $id)
     {
