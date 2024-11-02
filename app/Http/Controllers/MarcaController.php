@@ -94,16 +94,22 @@ class MarcaController extends Controller
 
 
     public function destroy($id)
-    {
+{
+    // Busca la marca por ID
     $marca = Marca::findOrFail($id);
 
+    // Registra la actividad
     activity()
         ->performedOn($marca)
         ->causedBy(auth()->user())
         ->log('Eliminó la marca: ' . $marca->nombre);
+
+    // Elimina la marca
     $marca->delete();
 
-    return redirect()->route('marcas.index')->with('success', 'Categoría eliminada correctamente.');
-    }
+    // Devuelve una respuesta JSON adecuada
+    return response()->json(['message' => 'Marca eliminada correctamente.'], 200);
+}
+
 
 }

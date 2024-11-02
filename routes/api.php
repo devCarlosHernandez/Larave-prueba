@@ -58,8 +58,11 @@ Route::apiResource('categorias', CategoriaController::class);
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/marcas', [MarcaController::class, 'index']);
     Route::post('/marcas', [MarcaController::class, 'store']);
+    Route::delete('/marcas', [MarcaController::class, 'destroy']);
     // Agrega otras rutas para editar y eliminar marcas si es necesario
 });
+
+Route::apiResource('marcas', MarcaController::class);
 
 Route::middleware('auth:sanctum')->get('/marcas', [MarcaController::class, 'index']);
 
@@ -67,20 +70,24 @@ Route::middleware('auth:sanctum')->get('/marcas', [MarcaController::class, 'inde
 
 Route::middleware('auth:sanctum')->get('/proveedores', [ProveedoresController::class, 'index']);
 Route::post('/proveedores', [ProveedoresController::class, 'store']);
-
+Route::apiResource('proveedores', ProveedoresController::class);
 
 /* Productos */
 
 Route::middleware('auth:sanctum')->get('/productos', [ProductoController::class, 'index']);
 Route::post('/productos', [ProductoController::class, 'store']);
+Route::apiResource('proveedores', ProductoController::class);
 /* Rutas para listar */
 
 Route::get('/marcas', [MarcaController::class, 'index']);
+Route::apiResource('productos', MarcaController::class);
 
 Route::get('/categorias', [CategoriaController::class, 'index']);
+Route::apiResource('categorias', CategoriaController::class);
 
 
 Route::get('/proveedores', [ProveedoresController::class, 'index']);
+Route::apiResource('proveedores', ProveedoresController::class);
 /* Activity Log */
 
 Route::middleware('auth:sanctum')->get('/activity', [ActivityController::class, 'index']);

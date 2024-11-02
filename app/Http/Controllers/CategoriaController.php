@@ -92,14 +92,23 @@ class CategoriaController extends Controller
 
     public function destroy($id)
     {
-    $categorias = Categoria::findOrFail($id);
-    activity()
-        ->performedOn($categorias) // El modelo que estás registrando
-        ->causedBy(auth()->user()) // Usuario que realiza la acción
-        ->log('Eliminó la categoría: ' . $categorias->nombre);
-    $categorias->delete();
+        try {
+            $categorias = Categoria::findOrFail($id);
 
-    return redirect()->route('categorias.index')->with('success', 'Categoría eliminada correctamente.');
+            activity()
+                ->performedOn($categorias)
+                ->causedBy(auth()->user())
+                ->log('Eliminó la categoría: ' . $categorias->nombre);
+
+            $categorias->delete();
+
+            return response()->json(['message' => 'Categoría eliminada correctamente.'], 200);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Categoría no encontrada.'], 404);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Error al eliminar la categoría.'], 500);
+        }
     }
+
 
 }
