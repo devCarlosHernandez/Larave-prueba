@@ -53,35 +53,40 @@ class CategoriaController extends Controller
         return redirect()->route('categorias.index')->with('mensaje', 'Categoría registrada');
     }
 
-
-
     public function update(Request $request, $id)
     {
-
+        // Validar los campos necesarios
         $request->validate([
             'nombre' => 'required|string|max:255',
             'descripcion' => 'required|string|max:255',
         ]);
 
+        // Buscar la categoría por ID
+        $categoria = Categoria::findOrFail($id);
 
-        $categorias = Categoria::findOrFail($id);
+        // Actualizar los campos
+        $categoria->update($request->only('nombre', 'descripcion'));
 
-        $categorias->update([
-            'nombre' => $request->nombre,
-            'descripcion' => $request->descripcion,
-        ]);
-
+        // Registrar la actividad
         activity()
-        ->performedOn($categorias) // El modelo que estás registrando
-        ->causedBy(auth()->user()) // Usuario que realiza la acción
-        ->log('Actualizó la categoría: ' . $categorias->nombre);
+            ->performedOn($categoria) // El modelo que estás registrando
+            ->causedBy(auth()->user()) // Usuario que realiza la acción
+            ->log('Actualizó la categoría: ' . $categoria->nombre);
 
+        // Si la solicitud espera JSON, retorna respuesta JSON
+        if ($request->expectsJson()) {
+            return response()->json(['mensaje' => 'Categoría actualizada correctamente.', 'categoria' => $categoria], 200);
+        }
+
+        // Redireccionar y agregar mensaje a la sesión
         return redirect()->route('categorias.index')->with('success', 'Categoría actualizada correctamente.');
     }
 
-    public function show(Categoria $categorias)
+
+
+    public function show(Categoria $categoria)
     {
-        return view('categorias.show', compact('categorias'));
+        return response()->json($categoria); // Solo devuelve el JSON
     }
 
     public function edit($id)
@@ -93,20 +98,31 @@ class CategoriaController extends Controller
     public function destroy($id)
     {
         try {
-            $categorias = Categoria::findOrFail($id);
+            $categoria = Categoria::findOrFail($id);
 
             activity()
-                ->performedOn($categorias)
+                ->performedOn($categoria)
                 ->causedBy(auth()->user())
-                ->log('Eliminó la categoría: ' . $categorias->nombre);
+                ->log('Eliminó la categoría: ' . $categoria->nombre);
 
-            $categorias->delete();
+            $categoria->delete();
 
-            return response()->json(['message' => 'Categoría eliminada correctamente.'], 200);
+            // Verifica si la solicitud espera JSON
+            if (request()->expectsJson()) {
+                return response()->json(['message' => 'Categoría eliminada correctamente.'], 200);
+            }
+
+            // Si no espera JSON, redirecciona a la vista
+            return redirect()->route('categorias.index')->with('success', 'Categoría eliminada correctamente.');
+
         } catch (\Exception $e) {
-            return response()->json(['message' => 'Categoría no encontrada.'], 404);
-        } catch (\Exception $e) {
-            return response()->json(['message' => 'Error al eliminar la categoría.'], 500);
+            // Si ocurre un error, verifica si la solicitud espera JSON
+            if (request()->expectsJson()) {
+                return response()->json(['message' => 'Categoría no encontrada.'], 404);
+            }
+
+            // Si no espera JSON, redirecciona a la vista con mensaje de error
+            return redirect()->route('categorias.index')->with('error', 'Categoría no encontrada.');
         }
     }
 

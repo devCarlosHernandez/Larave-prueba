@@ -53,31 +53,37 @@ class MarcaController extends Controller
 
         // Redireccionar y agregar mensaje a la sesión
         Session::flash('mensaje', 'Marca registrada');
-        return redirect()->route('marcas.index')->with('mensaje', 'Marca registrada');
+        return redirect()->route('marcas.index')->with('mensaje', 'Marca registrada'); // Redirect
     }
 
     public function update(Request $request, $id)
     {
+        // Validar los datos de entrada
         $request->validate([
             'nombre' => 'required|string|max:255',
-            'producto_id' => 'nullable|string|max:255',  // Hacerlo nullable
         ]);
 
+        // Buscar la marca por ID
         $marca = Marca::findOrFail($id);
 
         // Actualizar solo los campos que han sido enviados en la solicitud
-        $marca->update(array_filter([
-            'nombre' => $request->nombre,
-            'producto_id' => $request->producto_id,  // Solo se actualiza si no es null
-        ]));
+        $marca->update($request->only('nombre')); // Esto se puede simplificar
 
+        // Registrar la actividad
         activity()
             ->performedOn($marca)
             ->causedBy(auth()->user())
             ->log('Actualizó la marca: ' . $marca->nombre);
 
-        return redirect()->route('marcas.index')->with('success', 'Marca actualizada correctamente.');
+        // Devuelve una respuesta JSON si la solicitud espera JSON
+        if ($request->expectsJson()) {
+            return response()->json(['message' => 'Marca actualizada correctamente.'], 200);
+        }
+
+        // Redirigir a la vista del índice con un mensaje si no es JSON
+        return redirect()->route('marcas.index')->with('mensaje', 'Marca actualizada correctamente');
     }
+
 
 
     public function show(Marca $marca)
@@ -96,22 +102,39 @@ class MarcaController extends Controller
 
 
     public function destroy($id)
-{
-    // Busca la marca por ID
-    $marca = Marca::findOrFail($id);
+    {
+        try {
+            // Busca la marca por ID
+            $marca = Marca::findOrFail($id);
 
-    // Registra la actividad
-    activity()
-        ->performedOn($marca)
-        ->causedBy(auth()->user())
-        ->log('Eliminó la marca: ' . $marca->nombre);
+            // Registra la actividad
+            activity()
+                ->performedOn($marca)
+                ->causedBy(auth()->user())
+                ->log('Eliminó la marca: ' . $marca->nombre);
 
-    // Elimina la marca
-    $marca->delete();
+            // Elimina la marca
+            $marca->delete();
 
-    // Devuelve una respuesta JSON adecuada
-    return response()->json(['message' => 'Marca eliminada correctamente.'], 200);
-}
+            // Verifica si la solicitud espera JSON
+            if (request()->expectsJson()) {
+                return response()->json(['message' => 'Marca eliminada correctamente.'], 200);
+            }
+
+            // Si no espera JSON, redirecciona a la vista con un mensaje de éxito
+            return redirect()->route('marcas.index')->with('success', 'Marca eliminada correctamente.');
+
+        } catch (\Exception $e) {
+            // Si ocurre un error, verifica si la solicitud espera JSON
+            if (request()->expectsJson()) {
+                return response()->json(['message' => 'Marca no encontrada.'], 404);
+            }
+
+            // Si no espera JSON, redirecciona a la vista con mensaje de error
+            return redirect()->route('marcas.index')->with('error', 'Marca no encontrada.');
+        }
+    }
+
 
 
 }

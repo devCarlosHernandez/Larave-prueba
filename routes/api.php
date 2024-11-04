@@ -49,9 +49,20 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 /* Categoria*/
 
-Route::middleware('auth:sanctum')->get('/categorias', [CategoriaController::class, 'index']);
+// Definición de rutas protegidas por autenticación
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/categorias', [CategoriaController::class, 'index']); // Lista todas las categorías
+    Route::post('/categorias', [CategoriaController::class, 'store']); // Crear nueva categoría
 
-Route::apiResource('categorias', CategoriaController::class);
+    Route::get('/categorias/{categoria}', [CategoriaController::class, 'show']); // Mostrar una categoría específica por ID
+    Route::put('/categorias/{categoria}', [CategoriaController::class, 'update']); // Actualizar una categoría específica por ID
+    Route::delete('/categorias/{categoria}', [CategoriaController::class, 'destroy']); // Eliminar una categoría específica por ID
+});
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::apiResource('categorias', CategoriaController::class);
+});
+
 
 /* Marca */
 
@@ -62,16 +73,27 @@ Route::middleware('auth:sanctum')->group(function () {
     // Agrega otras rutas para editar y eliminar marcas si es necesario
 });
 Route::apiResource('marcas', MarcaController::class);
-Route::put('/marcas/{id}', [MarcaController::class, 'update'])->name('marcas.update');
+//Route::put('/marcas/{id}', [MarcaController::class, 'update'])->name('marcas.update');
+Route::put('/marcas/{id}', [MarcaController::class, 'update']);
+
 
 Route::middleware('auth:sanctum')->get('/marcas', [MarcaController::class, 'index']);
 
 /* Proveedores */
+// Definición de rutas protegidas por autenticación
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/proveedores', [ProveedoresController::class, 'index']); // Lista todas las categorías
+    Route::post('/proveedores', [ProveedoresController::class, 'store']); // Crear nueva categoría
 
-Route::middleware('auth:sanctum')->get('/proveedores', [ProveedoresController::class, 'index']);
-Route::post('/proveedores', [ProveedoresController::class, 'store']);
-Route::delete('/proveedores', [ProveedoresController::class, 'destroy']);
-Route::apiResource('proveedores', ProveedoresController::class);
+    Route::get('/proveedores/{categoria}', [ProveedoresController::class, 'show']); // Mostrar una categoría específica por ID
+    Route::put('/proveedores/{categoria}', [ProveedoresController::class, 'update']); // Actualizar una categoría específica por ID
+    Route::delete('/proveedores/{categoria}', [ProveedoresController::class, 'destroy']); // Eliminar una categoría específica por ID
+});
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::apiResource('proveedores', ProveedoresController::class);
+});
+Route::get('/api/proveedor/{id}', [ProveedoresController::class, 'show']);
 
 /* Productos */
 

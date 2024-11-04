@@ -29,25 +29,6 @@
                             </div>
                         </div>
 
-                        <div class="row mb-6">
-                            <label class="col-sm-2 col-form-label" for="producto-select">Producto Asociado:</label>
-                            <div class="col-sm-10">
-                                <select class="form-control" id="producto-select" name="producto_id" required>
-                                    <option value="">Selecciona un producto</option>
-                                    @foreach ($productos as $producto)
-                                        <option value="{{ $producto->id }}" 
-                                            {{ $producto->id == $marca->producto_id ? 'selected' : '' }}>
-                                            {{ $producto->nombre }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                                <p class="form-text">Selecciona un producto asociado a la marca</p>
-                                @error('producto_id')
-                                    <div class="alert alert-danger">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
-
                         <div class="row justify-content-center">
                             <div class="col-sm-12 d-flex justify-content-center">
                                 <a href="{{ route('marcas.index') }}" class="btn btn-danger me-3">Cancelar</a>

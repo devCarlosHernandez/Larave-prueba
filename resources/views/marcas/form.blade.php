@@ -40,25 +40,9 @@
                       @enderror
                   </div>
               </div>
-
-              <div class="row mb-6">
-                <label class="col-sm-2 col-form-label" for="producto-select">Selecciona un Producto</label>
-            
-                <div class="col-sm-10">
-                  <select class="form-control" id="producto-select" name="producto_id">
-                      <option value="">Selecciona un producto</option>
-                      @foreach ($productos as $producto)
-                          <option value="{{ $producto->id }}">{{ $producto->nombre }}</option>
-                      @endforeach
-                  </select>
-                  <p class="form-text">Selecciona un producto asociado a la marca</p>
-                  @error('producto_id')
-                      <p class="form-text text-danger">{{ $message }}</p>
-                  @enderror
-              </div>
               
             </div>
-            
+
 
               <div class="row justify-content-center">
                 <div class="col-sm-12 d-flex justify-content-center">

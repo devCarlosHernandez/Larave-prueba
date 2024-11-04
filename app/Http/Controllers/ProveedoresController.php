@@ -65,28 +65,36 @@ class ProveedoresController extends Controller
             'telefono' => 'required|string|max:20',
         ]);
 
-        // Busca la categoría por su ID
-        $proveedores = Proveedores::findOrFail($id);
+        // Busca el proveedor por su ID
+        $proveedor = Proveedores::findOrFail($id);
 
-        // Actualiza los campos de la categoría
-        $proveedores->update([
+        // Actualiza los campos del proveedor
+        $proveedor->update([
             'nombre' => $request->nombre,
             'direccion' => $request->direccion,
             'telefono' => $request->telefono,
         ]);
 
+        // Registrar la actividad
         activity()
-        ->performedOn($proveedores)
-        ->causedBy(auth()->user())
-        ->log('Actualizó al proveedores: ' . $proveedores->nombre);
+            ->performedOn($proveedor) // El modelo que estás registrando
+            ->causedBy(auth()->user()) // Usuario que realiza la acción
+            ->log('Actualizó al proveedor: ' . $proveedor->nombre);
 
-        // Redirige a la lista de categorías con un mensaje de éxito
-        return redirect()->route('proveedores.index')->with('success', 'Proveedor actualizada correctamente.');
+        // Si la solicitud espera JSON, retorna respuesta JSON
+        if ($request->expectsJson()) {
+            return response()->json(['mensaje' => 'Proveedor actualizado correctamente.', 'proveedor' => $proveedor], 200);
+        }
+
+        // Redirecciona y agrega mensaje a la sesión
+        Session::flash('mensaje', 'Proveedor actualizado correctamente.');
+        return redirect()->route('proveedores.index')->with('success', 'Proveedor actualizado correctamente.');
     }
 
-    public function show(Proveedores $proveedores) // Cambia a PascalCase
+
+    public function show(Proveedores $proveedores)
     {
-        return view('proveedores.show', compact('proveedores'));
+        return response()->json($proveedores);
     }
 
     public function edit($id)
@@ -99,22 +107,35 @@ class ProveedoresController extends Controller
     {
         try {
             // Encuentra el proveedor o lanza una excepción si no se encuentra
-            $proveedores = Proveedores::findOrFail($id);
+            $proveedor = Proveedores::findOrFail($id);
 
             // Registra la actividad
             activity()
-                ->performedOn($proveedores)
+                ->performedOn($proveedor)
                 ->causedBy(auth()->user())
-                ->log('Eliminó el proveedor: ' . $proveedores->nombre);
+                ->log('Eliminó el proveedor: ' . $proveedor->nombre);
 
             // Elimina el proveedor
-            $proveedores->delete();
+            $proveedor->delete();
 
-            // Respuesta en caso de éxito
-            return response()->json(['message' => 'Proveedor eliminado correctamente.'], 200);
+            // Verifica si la solicitud espera JSON
+            if (request()->expectsJson()) {
+                return response()->json(['message' => 'Proveedor eliminado correctamente.'], 200);
+            }
+
+            // Si no espera JSON, redirecciona a la vista
+            Session::flash('mensaje', 'Proveedor eliminado correctamente.');
+            return redirect()->route('proveedores.index')->with('success', 'Proveedor eliminado correctamente.');
+
         } catch (\Exception $e) {
-            // Manejo de errores en caso de fallo
-            return response()->json(['error' => 'Hubo un problema al eliminar el proveedor.'], 500);
+            // Si ocurre un error, verifica si la solicitud espera JSON
+            if (request()->expectsJson()) {
+                return response()->json(['message' => 'Proveedor no encontrado o hubo un problema al eliminar.'], 404);
+            }
+
+            // Si no espera JSON, redirecciona a la vista con mensaje de error
+            Session::flash('mensaje', 'Proveedor eliminado correctamente.');
+            return redirect()->route('proveedores.index')->with('success', 'Proveedor eliminado correctamente.');
         }
     }
 
