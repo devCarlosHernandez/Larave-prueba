@@ -14,15 +14,16 @@ class ProductoController extends Controller
     public function index()
     {
         if (request()->expectsJson()) {
-            // Obtener productos con proveedores para la respuesta JSON
-            $productos = Producto::with('proveedores')->paginate(50); // Cambié aquí para incluir proveedores
+            // Obtener productos con marcas, categorías y proveedores
+            $productos = Producto::with('marca', 'categoria', 'proveedores')->paginate(50);
             return response()->json($productos);
         }
 
-        // Obtener productos con marcas y categorías para la vista
-        $productos = Producto::with('marca', 'categoria', 'proveedores')->get(); // Asegúrate de incluir proveedores aquí también
+        // Obtener productos para la vista en Laravel
+        $productos = Producto::with('marca', 'categoria', 'proveedores')->get();
         return view('productos.index', compact('productos'));
     }
+
 
 
     public function create()

@@ -58,22 +58,18 @@ class ProveedoresController extends Controller
 
     public function update(Request $request, $id)
     {
-        // Valida los datos de entrada
+        // Validar los campos necesarios
         $request->validate([
             'nombre' => 'required|string|max:255',
             'direccion' => 'required|string|max:255',
             'telefono' => 'required|string|max:20',
         ]);
 
-        // Busca el proveedor por su ID
+        // Buscar el proveedor por ID
         $proveedor = Proveedores::findOrFail($id);
 
-        // Actualiza los campos del proveedor
-        $proveedor->update([
-            'nombre' => $request->nombre,
-            'direccion' => $request->direccion,
-            'telefono' => $request->telefono,
-        ]);
+        // Actualizar los campos del proveedor
+        $proveedor->update($request->only('nombre', 'direccion', 'telefono'));
 
         // Registrar la actividad
         activity()
@@ -86,16 +82,23 @@ class ProveedoresController extends Controller
             return response()->json(['mensaje' => 'Proveedor actualizado correctamente.', 'proveedor' => $proveedor], 200);
         }
 
-        // Redirecciona y agrega mensaje a la sesión
-        Session::flash('mensaje', 'Proveedor actualizado correctamente.');
+        // Redireccionar y agregar mensaje a la sesión
         return redirect()->route('proveedores.index')->with('success', 'Proveedor actualizado correctamente.');
     }
 
 
-    public function show(Proveedores $proveedores)
+
+    public function show($id)
     {
-        return response()->json($proveedores);
+        $proveedor = Proveedores::find($id);
+
+        if (!$proveedor) {
+            return response()->json(['message' => 'Proveedor no encontrado'], 404);
+        }
+
+        return response()->json($proveedor, 200);
     }
+
 
     public function edit($id)
     {

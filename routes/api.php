@@ -80,20 +80,15 @@ Route::put('/marcas/{id}', [MarcaController::class, 'update']);
 Route::middleware('auth:sanctum')->get('/marcas', [MarcaController::class, 'index']);
 
 /* Proveedores */
-// Definición de rutas protegidas por autenticación
-Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/proveedores', [ProveedoresController::class, 'index']); // Lista todas las categorías
-    Route::post('/proveedores', [ProveedoresController::class, 'store']); // Crear nueva categoría
-
-    Route::get('/proveedores/{categoria}', [ProveedoresController::class, 'show']); // Mostrar una categoría específica por ID
-    Route::put('/proveedores/{categoria}', [ProveedoresController::class, 'update']); // Actualizar una categoría específica por ID
-    Route::delete('/proveedores/{categoria}', [ProveedoresController::class, 'destroy']); // Eliminar una categoría específica por ID
-});
 
 Route::middleware('auth:sanctum')->group(function () {
+    // Rutas para CRUD de proveedores usando apiResource
     Route::apiResource('proveedores', ProveedoresController::class);
 });
-Route::get('/api/proveedor/{id}', [ProveedoresController::class, 'show']);
+
+// Si deseas tener un endpoint específico para obtener un proveedor sin apiResource
+Route::get('/api/proveedor/{id}', [ProveedoresController::class, 'show'])->middleware('auth:sanctum');
+
 
 /* Productos */
 
@@ -101,6 +96,8 @@ Route::middleware('auth:sanctum')->get('/productos', [ProductoController::class,
 Route::post('/productos', [ProductoController::class, 'store']);
 Route::delete('/productos', [ProductoController::class, 'destroy']);
 Route::apiResource('productos', ProductoController::class);
+
+
 /* Rutas para listar */
 
 Route::get('/marcas', [MarcaController::class, 'index']);
@@ -111,7 +108,7 @@ Route::apiResource('categorias', CategoriaController::class);
 
 
 Route::get('/proveedores', [ProveedoresController::class, 'index']);
-Route::apiResource('proveedores', ProveedoresController::class);
+
 /* Activity Log */
 
 Route::middleware('auth:sanctum')->get('/activity', [ActivityController::class, 'index']);

@@ -15,6 +15,17 @@ class Marca extends Model
     {
         return $this->hasMany(Producto::class, 'marca_id');  // Relación uno a muchos
     }
-    
+
+    public function marca()
+    {
+        return $this->belongsTo(Marca::class);
+    }
+
+    public function categoria()
+    {
+        return $this->belongsTo(Categoria::class);
+    }
+
+
 
 }
