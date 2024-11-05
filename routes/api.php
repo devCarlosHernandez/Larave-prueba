@@ -96,6 +96,7 @@ Route::middleware('auth:sanctum')->get('/productos', [ProductoController::class,
 Route::post('/productos', [ProductoController::class, 'store']);
 Route::delete('/productos', [ProductoController::class, 'destroy']);
 Route::apiResource('productos', ProductoController::class);
+Route::put('/productos/{id}', [ProductoController::class, 'update']);
 
 
 /* Rutas para listar */
