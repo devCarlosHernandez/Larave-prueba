@@ -93,16 +93,12 @@ Route::get('/api/proveedor/{id}', [ProveedoresController::class, 'show'])->middl
 /* Productos */
 
 Route::middleware('auth:sanctum')->get('/productos', [ProductoController::class, 'index']);
-Route::post('/productos', [ProductoController::class, 'store']);
-Route::delete('/productos', [ProductoController::class, 'destroy']);
 Route::apiResource('productos', ProductoController::class);
-Route::put('/productos/{id}', [ProductoController::class, 'update']);
 
 
 /* Rutas para listar */
 
 Route::get('/marcas', [MarcaController::class, 'index']);
-Route::apiResource('productos', ProductoController::class);
 
 Route::get('/categorias', [CategoriaController::class, 'index']);
 Route::apiResource('categorias', CategoriaController::class);

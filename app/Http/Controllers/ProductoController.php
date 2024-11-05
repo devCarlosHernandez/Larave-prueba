@@ -79,8 +79,14 @@ class ProductoController extends Controller
     }
 
 
-    public function show(Producto $producto)
+    public function show($id)
     {
+
+        $producto = Producto::with('proveedores:id')->find($id);
+
+
+        $producto->proveedor_id = $producto->proveedores->map->id->toArray();
+        unset($producto->proveedores);
 
         return response()->json($producto);
 
@@ -129,9 +135,6 @@ class ProductoController extends Controller
         return redirect()->route('productos.index')->with('success', 'Producto actualizado correctamente.');
     }
 
-
-
-
     public function destroy($id)
     {
         try {
@@ -144,11 +147,22 @@ class ProductoController extends Controller
 
             $producto->delete(); // Eliminar el producto
 
-            return response()->json(['message' => 'Producto eliminado correctamente.'], 200); // Respuesta en JSON
+            // Verifica si la solicitud espera JSON
+            if (request()->expectsJson()) {
+                return response()->json(['message' => 'Producto eliminado correctamente.'], 200);
+            }
+
+            // Si no espera JSON, redirecciona a la vista
+            return redirect()->route('productos.index')->with('success', 'Producto eliminado correctamente.');
+
         } catch (\Exception $e) {
-            return response()->json(['message' => 'Producto no encontrado.'], 404); // Respuesta si no se encuentra
-        } catch (\Exception $e) {
-            return response()->json(['message' => 'Error al eliminar el producto.'], 500); // Respuesta de error general
+            // Si ocurre un error, verifica si la solicitud espera JSON
+            if (request()->expectsJson()) {
+                return response()->json(['message' => 'Producto no encontrado.'], 404);
+            }
+
+            // Si no espera JSON, redirecciona a la vista con mensaje de error
+            return redirect()->route('productos.index')->with('error', 'Producto no encontrado.');
         }
     }
 
